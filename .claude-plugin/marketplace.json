@@ -1,0 +1,17 @@
+{
+  "name": "taobao-skill",
+  "owner": {
+    "name": "Jeremy Dong"
+  },
+  "metadata": {
+    "description": "Claude Code plugin for scraping Taobao/Tmall product data via Chrome DevTools MCP",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "taobao-skill",
+      "source": ".",
+      "description": "Taobao/Tmall product scraping skill using Chrome DevTools MCP. Dynamically navigates and extracts product data with AI-driven adaptation to page variations."
+    }
+  ]
+}
