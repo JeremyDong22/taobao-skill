@@ -15,12 +15,10 @@ ecommerce-skills/                    # Marketplace root (marketplace.json define
 ├── .mcp.json                        # Project-level MCP server config (user-specific, gitignored)
 └── taobao-skill/                    # Individual plugin (Claude Code plugin structure)
     ├── .claude-plugin/plugin.json   # Plugin metadata (name, version, author)
-    ├── commands/                    # Slash commands (user-invocable via /taobao-scrape)
-    │   └── taobao-scrape.md         # Orchestration workflow: login → navigate → extract → present
-    └── skills/                      # Domain knowledge skills (loaded by commands or auto-matched)
+    └── skills/                      # Skills exposed as slash commands and auto-activated by description matching
         └── taobao-product-scraper/
-            ├── SKILL.md             # Core extraction logic, JS scripts, output format
-            └── references/          # Supplementary domain knowledge
+            ├── SKILL.md             # Layered: prerequisites → workflow → extraction knowledge → output format
+            └── references/          # Supplementary domain knowledge (volatile/detailed)
                 ├── taobao-page-structure.md   # CSS selectors, JS data paths, image URL cleaning
                 ├── taobao-login-flow.md       # Multi-factor login detection, QR flow, session persistence
                 └── taobao-known-issues.md     # A/B testing, share links, selector drift, rate limiting
@@ -28,10 +26,9 @@ ecommerce-skills/                    # Marketplace root (marketplace.json define
 
 ### Key Concepts
 
-- **Commands** (`commands/*.md`): Define slash-command workflows with YAML frontmatter. `taobao-scrape.md` orchestrates the full scrape lifecycle (browser setup → login → navigation → extraction → output).
-- **Skills** (`skills/*/SKILL.md`): Contain domain knowledge that commands load via the Skill tool. The skill's `description` field in frontmatter controls when it auto-activates.
-- **References** (`skills/*/references/*.md`): Supplementary knowledge files loaded by skills. Keep detailed/volatile information here (selectors, known issues) separate from the core skill logic.
-- **MCP config** (`.mcp.json`): Not bundled with the plugin — users must create their own at the project level. The command includes setup instructions if MCP tools are missing.
+- **Skills** (`skills/*/SKILL.md`): Self-contained units with YAML frontmatter. Each skill is exposed as a slash command and auto-activates when the user's request matches its `description` field. The SKILL.md contains both workflow orchestration and domain knowledge in a layered structure.
+- **References** (`skills/*/references/*.md`): Supplementary knowledge files for detailed/volatile information (selectors, known issues) kept separate from the core skill.
+- **MCP config** (`.mcp.json`): Not bundled with the plugin — users must create their own at the project level. The skill includes setup instructions if MCP tools are missing.
 
 ### Data Extraction Strategy
 
@@ -44,13 +41,13 @@ The plugin follows a JS-first → DOM-fallback approach:
 
 1. Create a new directory at the repo root (e.g., `jd-skill/`)
 2. Add `.claude-plugin/plugin.json` with name, description, version
-3. Add `commands/` and `skills/` directories following the taobao-skill structure
+3. Add `skills/` directory with a SKILL.md (layered: prerequisites → workflow → knowledge → output)
 4. Register the plugin in `.claude-plugin/marketplace.json` under `plugins[]`
 5. Enable it in `.claude/settings.json` under `enabledPlugins`
 
 ## Conventions
 
-- All command/skill files are Markdown with YAML frontmatter
+- All skill files are Markdown with YAML frontmatter
 - Reference files contain volatile data (selectors, known issues) that changes frequently — keep them separate from core skill logic
 - Image URLs from Taobao CDN must be cleaned (remove `_qNN`, `_NNxNN`, `.webp` suffixes) — patterns documented in `taobao-page-structure.md`
 - Always use desktop URLs (`detail.tmall.com`), never mobile (`detail.m.tmall.com`)
